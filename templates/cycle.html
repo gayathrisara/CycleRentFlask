@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Cycle Rental App</title>
+    <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
+        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" rel="stylesheet">
+    <link href="{{url_for('static', filename = 'cycle.jpg' )}}" rel="shortcut icon">
+</head>
+
+<body>
+    {% block body %}
+    <div class="container">
+        <div class="well text-center">
+            <h1>Cycle</h1>
+        </div>
+        <div class="container">
+            <div class="row">
+                <div class="col md-12">
+                    <h2>
+                        Cycle List
+                        <button class="btn btn-primary float-end" data-bs-target="#exampleModal" data-bs-toggle="modal"
+                            type="button">
+                            Add Cycle
+                        </button>
+                    </h2>
+                    {% if message %}
+                    <div class="alert alert-success" role="alert">
+                        <button aria-label="Close" class="float-end btn-close" data-bs-dismiss="alert"
+                                type="button"></button>
+                        {{ message }}
+                    </div>
+                    {% endif %}
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Id</th>
+                                <th>Reference ID</th>
+                                <th>Barcode</th>
+                                <th>Status</th>
+                                <th>Last Rented By</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {%for row in cycles%}
+                            <tr>
+                                <td>{{row.cycle_id}}</td>
+                                <td>{{row.reference_id}}</td>
+                                <td>{{row.barcode_id}}</td>
+                                <td>{{row.status}}</td>
+                                <td>{{row.last_rented_by}}</td>
+                                <td>
+                                    <a class="btn p-1 btn-primary btn-sm" data-bs-target="#exampleModal1{{row.cycle_id}}"
+                                        data-bs-toggle="modal" href="/cycles">Edit</a>
+                                    <a class="btn p-1 btn-danger btn-sm" href="/cycle_delete/{{row.cycle_id}}">Delete</a>
+                                </td>
+                                <div aria-hidden="true" aria-labelledby="exampleModalLabel1" class="modal fade"
+                                    id="exampleModal1{{row.cycle_id}}" tabindex="-1">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h1 class="modal-title fs-5" id="exampleModalLabel1">Edit information of
+                                                    Cycle {{row.reference_id}}</h1>
+                                                <button aria-label="Close" class="btn-close" data-bs-dismiss="modal"
+                                                    type="button"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <form action={{url_for('cycle_update')}} method="POST">
+                                                    <div class="form-group">
+                                                        <label>Reference ID:</label>
+                                                        <input type="hidden" name="cycle_id" value="{{row.cycle_id}}">
+                                                        <input class="form-control" name="reference_id" disabled value="{{row.reference_id}}" placeholder="{{row.reference_id}}"
+                                                               required="1" type="text">
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label>Barcode:</label>
+                                                        <input class="form-control" name="barcode_id" value="{{row.barcode_id}}" placeholder="{{row.barcode_id}}"
+                                                               required="1" type="text">
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label>Status:</label>
+                                                        <select class="form-control" name="status" id="status" required>
+                                                            <option value="Available" {% if row.status == 'Available' %} selected {% endif %}>Available</option>
+                                                            <option value="On-Rent" {% if row.status == 'On-Rent' %} selected {% endif %}>On-Rent</option>
+                                                            <option value="Maintenance" {% if row.status == 'Maintenance' %} selected {% endif %}>Maintenance</option>
+                                                            <option value="Non-Serviceable" {% if row.status == 'Non-Serviceable' %} selected {% endif %}>Non-Serviceable</option>
+                                                            <option value="Deactivated" {% if row.status == 'Deactivated' %} selected {% endif %}>Deactivated</option>
+                                                        </select>
+                                                        <!-- <input class="form-control" name="status" value="{{row.status}}" placeholder="{{row.status}}"
+                                                               required="1" type="text"> -->
+                                                    </div>
+                                                    <div class="form-group float-end m-2">
+                                                        <button class="btn btn-primary" type="submit">Update Data</button>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </tr>
+                            {%endfor%}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endblock %}
+
+    <!-- Add Clycle Block-->
+    <div aria-hidden="true" aria-labelledby="exampleModalLabel" class="modal fade" id="exampleModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="exampleModalLabel">Add new Cycle</h1>
+                    <button aria-label="Close" class="btn-close" data-bs-dismiss="modal" type="button"></button>
+                </div>
+                <div class="modal-body">
+                    <form action={{url_for('cycles')}} method="POST">
+                        <div class="form-group">
+                            <label>Reference ID:</label>
+                            <input class="form-control" name="reference_id" required="1" type="text">
+                        </div>
+                        <div class="form-group">
+                            <label>Barcode:</label>
+                            <input class="form-control" name="barcode_id" required="1" type="text">
+                        </div>
+                        <div class="form-group">
+                            <label>Status:</label>
+                            <select class="form-control" name="status" id="status" required>
+                                <option value="Available" selected>Available</option>
+                                <option value="On-Rent">On-Rent</option>
+                                <option value="Maintenance">Maintenance</option>
+                                <option value="Non-Serviceable">Non-Serviceable</option>
+                                <option value="Deactivated">Deactivated</option>
+                            </select>
+                            <!-- <input class="form-control" name="status" required="1" type="text"> -->
+                        </div>
+                        <div class="form-group float-end m-2">
+                            <button class="btn btn-primary" type="submit">Insert Data</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+<script crossorigin="anonymous" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+    src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+<script crossorigin="anonymous" integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p"
+    src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+<script crossorigin="anonymous" integrity="sha384-cVKIPhGWiC2Al4u+LWgxfKTRIcfu0JTxR+EQDz/bgldoEyl4H0zUF0QKbrJ0EcQF"
+    src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js"></script>
+
+</html>
