@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Cycle Rental App</title>
+    <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
+        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" rel="stylesheet">
+    <link href="{{url_for('static', filename = 'cycle.jpg' )}}" rel="shortcut icon">
+</head>
+
+<body>
+    {% block body %}
+    <div class="container">
+        <div class="well text-center">
+            <h1>User</h1>
+        </div>
+        <div class="container">
+            <div class="row">
+                <div class="col md-12">
+                    <h2>
+                        User List
+                        <button class="btn btn-primary float-end" data-bs-target="#exampleModal" data-bs-toggle="modal"
+                            type="button">
+                            Add User
+                        </button>
+                    </h2>
+                    {% if message %}
+                    <div class="alert alert-success" role="alert">
+                        <button aria-label="Close" class="float-end btn-close" data-bs-dismiss="alert"
+                                type="button"></button>
+                        {{ message }}
+                    </div>
+                    {% endif %}
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Id</th>
+                                <th>User</th>
+                                <th>Barcode</th>
+                                <th>Organization</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {%for row in users%}
+                            <tr>
+                                <td>{{row.user_id}}</td>
+                                <td>{{row.name}}</td>
+                                <td>{{row.barcode_id}}</td>
+                                <td>{{row.organization_id}}</td>
+                                <td>
+                                    <a class="btn p-1 btn-primary btn-sm" data-bs-target="#exampleModal1{{row.user_id}}"
+                                        data-bs-toggle="modal" href="/users">Edit</a>
+                                    <a class="btn p-1 btn-danger btn-sm" href="/user_delete/{{row.user_id}}">Delete</a>
+                                </td>
+                                <div aria-hidden="true" aria-labelledby="exampleModalLabel1" class="modal fade"
+                                    id="exampleModal1{{row.user_id}}" tabindex="-1">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h1 class="modal-title fs-5" id="exampleModalLabel1">Edit information of
+                                                    User {{row.name}}</h1>
+                                                <button aria-label="Close" class="btn-close" data-bs-dismiss="modal"
+                                                    type="button"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <form action={{url_for('user_update')}} method="POST">
+                                                    <div class="form-group">
+                                                        <label>Name:</label>
+                                                        <input type="hidden" name="user_id" value="{{row.user_id}}">
+                                                        <input class="form-control" name="name" disabled value="{{row.name}}" placeholder="{{row.name}}"
+                                                               required="1" type="text">
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label>Barcode:</label>
+                                                        <input class="form-control" name="barcode_id" value="{{row.barcode_id}}" placeholder="{{row.barcode_id}}"
+                                                               required="1" type="text">
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label>Organization:</label>
+                                                        <input class="form-control" name="organization_id" value="{{row.organization_id}}" placeholder="{{row.organization_id}}"
+                                                               required="1" type="text">
+                                                    </div>
+                                                    <div class="form-group float-end m-2">
+                                                        <button class="btn btn-primary" type="submit">Update Data</button>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </tr>
+                            {%endfor%}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endblock %}
+
+    <!-- Add User Block-->
+    <div aria-hidden="true" aria-labelledby="exampleModalLabel" class="modal fade" id="exampleModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="exampleModalLabel">Add new User</h1>
+                    <button aria-label="Close" class="btn-close" data-bs-dismiss="modal" type="button"></button>
+                </div>
+                <div class="modal-body">
+                    <form action={{url_for('users')}} method="POST">
+                        <div class="form-group">
+                            <label>Name:</label>
+                            <input class="form-control" name="name" required="1" type="text">
+                        </div>
+                        <div class="form-group">
+                            <label>Barcode:</label>
+                            <input class="form-control" name="barcode_id" required="1" type="text">
+                        </div>
+                        <div class="form-group">
+                            <label>Organization:</label>
+                            <input class="form-control" name="organization_id" required="1" type="text">
+                        </div>
+                        <div class="form-group float-end m-2">
+                            <button class="btn btn-primary" type="submit">Insert Data</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+<script crossorigin="anonymous" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+    src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+<script crossorigin="anonymous" integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p"
+    src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+<script crossorigin="anonymous" integrity="sha384-cVKIPhGWiC2Al4u+LWgxfKTRIcfu0JTxR+EQDz/bgldoEyl4H0zUF0QKbrJ0EcQF"
+    src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js"></script>
+
+</html>
